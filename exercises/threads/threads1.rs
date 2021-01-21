@@ -6,9 +6,8 @@
 // of "waiting..." and the program ends without timing out when running,
 // you've got it :)
 
-// I AM NOT DONE
 
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 use std::thread;
 use std::time::Duration;
 
@@ -17,16 +16,24 @@ struct JobStatus {
 }
 
 fn main() {
-    let status = Arc::new(JobStatus { jobs_completed: 0 });
-    let status_shared = status.clone();
+    let status = Arc::new(RwLock::new(JobStatus { jobs_completed: 0 }));
+    
+    let status_shared = Arc::clone(&status);
     thread::spawn(move || {
-        for _ in 0..10 {
+        for i in 0..10 {
+            println!("child {}: sleeping", i);
             thread::sleep(Duration::from_millis(250));
-            status_shared.jobs_completed += 1;
+            let mut child_status = status_shared.write().unwrap();
+            println!("child {}: writing", i);
+            child_status.jobs_completed += 1;
+            println!("child {}: jobs_completed={}", i, child_status.jobs_completed);
         }
     });
-    while status.jobs_completed < 10 {
-        println!("waiting... ");
+
+    while status.read().unwrap().jobs_completed < 10 {
+        println!("main: waiting... ");
         thread::sleep(Duration::from_millis(500));
     }
+
+    println!("main: done!");
 }
