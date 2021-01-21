@@ -1,9 +1,5 @@
 // iterators4.rs
-
-// I AM NOT DONE
-
-pub fn factorial(num: u64) -> u64 {
-    // Complete this function to return the factorial of num
+// Complete this function to return the factorial of num
     // Do not use:
     // - return
     // Try not to use:
@@ -12,6 +8,9 @@ pub fn factorial(num: u64) -> u64 {
     // For an extra challenge, don't use:
     // - recursion
     // Execute `rustlings hint iterators4` for hints.
+
+pub fn factorial(num: u64) -> u64 {
+    (1..=num).product()
 }
 
 #[cfg(test)]
